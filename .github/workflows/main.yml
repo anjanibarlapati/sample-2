@@ -16,12 +16,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install Cocoapods
+        run: sudo gem install cocoapods
+
       - name: Install Dependencies
         run: npm install
+
+            - name: Install Pods 
+        working-directory: ./ios
+        run: pod install
 
       - name: Run Tests
         run: npm test
 
       - name: Build iOS
-        run: npx react-native run-ios
+        run: npm run ios
           
