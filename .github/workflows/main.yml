@@ -23,7 +23,7 @@ jobs:
         run: npm test
 
       - name: Build Android
-        run: npx react-native run-andriod
+        run: npx react-native run-android
 
       - name: Build iOS
         run: npx react-native run-ios
