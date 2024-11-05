@@ -22,9 +22,6 @@ jobs:
       - name: Run Tests
         run: npm test
 
-      - name: Build Android
-        run: npx react-native run-android
-
       - name: Build iOS
         run: npx react-native run-ios
           
