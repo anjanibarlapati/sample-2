@@ -44,6 +44,10 @@ jobs:
       - name: Check NPM Version
         run: npm --version
 
+      - name: Print Node Modules Path (Test Job)
+        run: |
+          echo "Node modules path in Test job: $(pwd)/node_modules"
+
       - name: List Installed Node Modules
         run: ls -la ./node_modules
 
