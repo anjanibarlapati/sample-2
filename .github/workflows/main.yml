@@ -185,9 +185,9 @@ on:
       - master
 
 jobs:
-  test-and-build-on-iOS:
+  Test-and-build-on-iOS:
     runs-on: macos-latest
-    name: Test and Build on iOS
+    name: Test-and-build-on-iOS
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -231,7 +231,6 @@ jobs:
         run: npm test
 
       - name: Build iOS
-        # run: npx react-native build-ios
         run: |
           cd ios
           xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -sdk iphoneos -configuration Release clean build
@@ -244,9 +243,9 @@ jobs:
           path: ./ios/build/Release-iphoneos/*.ipa
 
 
-  test-and-build-on-android:
+  Test-and-build-on-android:
     runs-on: macos-latest
-    name: Test and Build on android
+    name: Test-and-build-on-android
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -291,7 +290,6 @@ jobs:
         run: npm test
 
       - name: Build Android
-        # run: npx react-native build-android
         run: |
           cd android
           ./gradlew assembleRelease
@@ -305,7 +303,7 @@ jobs:
   Deploy-iOS:
     runs-on: macos-latest
     name: Deploy-iOS
-    needs: test-and-build-on-iOS
+    needs: Test-and-build-on-iOS
     steps:
       - name: Download iOS artifact
         uses: actions/download-artifact@v3
@@ -322,7 +320,7 @@ jobs:
   Deploy-Android:
     runs-on: macos-latest
     name: Deploy-Android
-    needs: test-and-build-on-android
+    needs: Test-and-build-on-android
     steps:
       - name: Download android artifact
         uses: actions/download-artifact@v3
