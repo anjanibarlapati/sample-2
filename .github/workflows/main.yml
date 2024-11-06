@@ -1,18 +1,192 @@
-name: Test, Build and Deploy
+# name: Test, Build and Deploy
+
+# on:
+#   push:
+#     branches:
+#       - master
+#   pull_request:
+#     branches:
+#       - master
+
+# jobs:
+
+#   Setup-and-test:
+#     runs-on: macos-latest
+#     name: Setup-and-test
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '20'
+
+#       - name: Cache Node Modules
+#         uses: actions/cache@v3
+#         with:
+#           path: ./node_modules
+#           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+#           restore-keys: |
+#               ${{ runner.os }}-node-modules-
+
+#       - name: Install Dependencies
+#         run: npm install
+
+#       - name: Run Tests 
+#         run: npm test
+
+#   Build-iOS:
+#     runs-on: macos-latest
+#     name: Build-iOS
+#     needs: Setup-and-test
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '20'
+
+#       - name: Cache Node Modules
+#         uses: actions/cache@v3
+#         with:
+#           path: ./node_modules
+#           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+#           restore-keys: |
+#             ${{ runner.os }}-node-modules-
+
+#       - name: Install Cocoapods
+#         run: sudo gem install cocoapods
+
+#       - name: Cache pods
+#         uses: actions/cache@v3
+#         with:
+#           path: |
+#             ios/Pods
+#             ~/Library/Caches/CocoaPods
+#             ~/.cocoapods
+#           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+#           restore-keys: |
+#             ${{ runner.os }}-pods-
+
+#       - name: Install pod dependencies
+#         run: |
+#           cd ios
+#           pod install
+#           cd ..
+
+#       - name: Build iOS
+#         run: npm run ios
+
+#       - name: List build directory contents
+#         run: ls -R ./ios/build
+
+#       - name: Upload iOS IPA artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: ios-ipa
+#           path: ./ios/build/Release-iphoneos/*.ipa
+
+
+#   Build-Android:
+#     runs-on: macos-latest
+#     name: Build-Android
+#     needs: Setup-and-test
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '20'
+
+#       - name: Cache Node Modules
+#         uses: actions/cache@v3
+#         with:
+#           path: ./node_modules
+#           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+#           restore-keys: |
+#             ${{ runner.os }}-node-modules-    
+
+#       - name: Set up JDK 17
+#         uses: actions/setup-java@v3
+#         with:
+#           distribution: adopt
+#           java-version: '17'
+#           cache: gradle
+
+#       - name: Cache Gradle Wrapper
+#         uses: actions/cache@v2
+#         with:
+#           path: ~/.gradle/wrapper
+#           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}  
+
+#       - name: Cache Gradle Dependencies
+#         uses: actions/cache@v2
+#         with:
+#           path: ~/.gradle/caches
+#           key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+#           restore-keys: |
+#             ${{ runner.os }}-gradle-caches-
+
+#       - name: Build Android
+#         run: npm run android
+
+#       - name: Upload Android APK artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: android-apk
+#           path: ./android/app/build/outputs/apk/release/app-release.apk
+
+#   Deploy-iOS:
+#     runs-on: macos-latest
+#     name: Deploy-iOS
+#     needs: Build-iOS
+#     steps:
+#       - name: Download iOS artifact
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: ios-ipa
+#           path: ./ios/build/Release-iphoneos/*.ipa
+
+#       - name: Deploy to GitHub Pages
+#         uses: peaceiris/actions-gh-pages@v3
+#         with:
+#           github_token: ${{ secrets.CI_CD_Token }}
+#           publish_dir: ./build
+
+#   Deploy-Android:
+#     runs-on: macos-latest
+#     name: Deploy-Android
+#     needs: Build-Android
+#     steps:
+#       - name: Download android artifact
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: android-apk
+#           path: ./android/app/build/outputs/apk/release/app-release.apk
+#       - name: Deploy to GitHub Pages
+#         uses: peaceiris/actions-gh-pages@v3
+#         with:
+#           github_token: ${{ secrets.CI_CD_Token }}
+#           publish_dir: ./build
+name: Test and Build
 
 on:
   push:
     branches:
-      - master
+      - pet-buddy-app-part-1
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
-
-  Setup-and-test:
+  test-and-build-on-iOS:
     runs-on: macos-latest
-    name: Setup-and-test
+    name: Test and Build
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -21,79 +195,28 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-
-      - name: Cache Node Modules
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-              ${{ runner.os }}-node-modules-
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Run Tests 
-        run: npm test
-
-  Build-iOS:
-    runs-on: macos-latest
-    name: Build-iOS
-    needs: Setup-and-test
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Cache Node Modules
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
 
       - name: Install Cocoapods
         run: sudo gem install cocoapods
 
-      - name: Cache pods
-        uses: actions/cache@v3
-        with:
-          path: |
-            ios/Pods
-            ~/Library/Caches/CocoaPods
-            ~/.cocoapods
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Install pod dependencies
+      - name: Install Pods 
         run: |
           cd ios
           pod install
-          cd ..
+
+      - name: Run Tests
+        run: npm test
 
       - name: Build iOS
-        run: npm run ios
-
-      - name: List build directory contents
-        run: ls -R ./ios/build
-
-      - name: Upload iOS IPA artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ios-ipa
-          path: ./ios/build/Release-iphoneos/*.ipa
+        run: npx react-native run-ios
 
 
-  Build-Android:
+  test-and-build-on-android:
     runs-on: macos-latest
-    name: Build-Android
-    needs: Setup-and-test
+    name: Test and Build
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -103,73 +226,17 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cache Node Modules
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-    
+      - name: Install Dependencies
+        run: npm install
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: adopt
           java-version: '17'
-          cache: gradle
 
-      - name: Cache Gradle Wrapper
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}  
-
-      - name: Cache Gradle Dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-caches-
+      - name: Run Tests
+        run: npm test
 
       - name: Build Android
-        run: npm run android
-
-      - name: Upload Android APK artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: android-apk
-          path: ./android/app/build/outputs/apk/release/app-release.apk
-
-  Deploy-iOS:
-    runs-on: macos-latest
-    name: Deploy-iOS
-    needs: Build-iOS
-    steps:
-      - name: Download iOS artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ios-ipa
-          path: ./ios/build/Release-iphoneos/*.ipa
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.CI_CD_Token }}
-          publish_dir: ./build
-
-  Deploy-Android:
-    runs-on: macos-latest
-    name: Deploy-Android
-    needs: Build-Android
-    steps:
-      - name: Download android artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: android-apk
-          path: ./android/app/build/outputs/apk/release/app-release.apk
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.CI_CD_Token }}
-          publish_dir: ./build
+        run: npx react-native run-andriod
