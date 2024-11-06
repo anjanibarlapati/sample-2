@@ -39,6 +39,9 @@ jobs:
     needs: Setup
     steps:
 
+      - name: Print package.json Path (Test Job)
+        run: |
+          echo "Node modules path in Test job: $(pwd)/package.json"
       - name: Run Tests 
         run: npm test
 
