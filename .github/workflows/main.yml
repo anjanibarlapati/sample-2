@@ -83,11 +83,11 @@
 #       - name: List build directory contents
 #         run: ls -R ./ios/build
 
-#       - name: Upload iOS IPA artifact
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: ios-ipa
-#           path: ./ios/build/Release-iphoneos/*.ipa
+      # - name: Upload iOS IPA artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ios-ipa
+      #     path: ./ios/build/Release-iphoneos/*.ipa
 
 
 #   Build-Android:
@@ -135,44 +135,45 @@
 #       - name: Build Android
 #         run: npm run android
 
-#       - name: Upload Android APK artifact
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: android-apk
-#           path: ./android/app/build/outputs/apk/release/app-release.apk
+      # - name: Upload Android APK artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: android-apk
+      #     path: ./android/app/build/outputs/apk/release/app-release.apk
 
-#   Deploy-iOS:
-#     runs-on: macos-latest
-#     name: Deploy-iOS
-#     needs: Build-iOS
-#     steps:
-#       - name: Download iOS artifact
-#         uses: actions/download-artifact@v3
-#         with:
-#           name: ios-ipa
-#           path: ./ios/build/Release-iphoneos/*.ipa
+  # Deploy-iOS:
+  #   runs-on: macos-latest
+  #   name: Deploy-iOS
+  #   needs: Build-iOS
+  #   steps:
+  #     - name: Download iOS artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: ios-ipa
+  #         path: ./ios/build/Release-iphoneos/*.ipa
 
-#       - name: Deploy to GitHub Pages
-#         uses: peaceiris/actions-gh-pages@v3
-#         with:
-#           github_token: ${{ secrets.CI_CD_Token }}
-#           publish_dir: ./build
+  #     - name: Deploy to GitHub Pages
+  #       uses: peaceiris/actions-gh-pages@v3
+  #       with:
+  #         github_token: ${{ secrets.CI_CD_Token }}
+  #         publish_dir: ./build
 
-#   Deploy-Android:
-#     runs-on: macos-latest
-#     name: Deploy-Android
-#     needs: Build-Android
-#     steps:
-#       - name: Download android artifact
-#         uses: actions/download-artifact@v3
-#         with:
-#           name: android-apk
-#           path: ./android/app/build/outputs/apk/release/app-release.apk
-#       - name: Deploy to GitHub Pages
-#         uses: peaceiris/actions-gh-pages@v3
-#         with:
-#           github_token: ${{ secrets.CI_CD_Token }}
-#           publish_dir: ./build
+  # Deploy-Android:
+  #   runs-on: macos-latest
+  #   name: Deploy-Android
+  #   needs: Build-Android
+  #   steps:
+  #     - name: Download android artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: android-apk
+  #         path: ./android/app/build/outputs/apk/release/app-release.apk
+  #     - name: Deploy to GitHub Pages
+  #       uses: peaceiris/actions-gh-pages@v3
+  #       with:
+  #         github_token: ${{ secrets.CI_CD_Token }}
+  #         publish_dir: ./build
+
 name: Test and Build
 
 on:
@@ -232,6 +233,12 @@ jobs:
       - name: Build iOS
         run: npx react-native build-ios
 
+      - name: Upload iOS IPA artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-ipa
+          path: ./ios/build/Release-iphoneos/*.ipa
+
 
   test-and-build-on-android:
     runs-on: macos-latest
@@ -273,7 +280,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: 'adpot'
           java-version: '17'
 
       - name: Run Tests
@@ -281,3 +288,44 @@ jobs:
 
       - name: Build Android
         run: npx react-native build-android
+
+      - name: Upload Android APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-apk
+          path: ./android/app/build/outputs/apk/release/app-release.apk
+          
+  Deploy-iOS:
+    runs-on: macos-latest
+    name: Deploy-iOS
+    needs: Build-iOS
+    steps:
+      - name: Download iOS artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ios-ipa
+          path: ./ios/build/Release-iphoneos/*.ipa
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.CI_CD_Token }}
+          publish_dir: ./build
+
+  Deploy-Android:
+    runs-on: macos-latest
+    name: Deploy-Android
+    needs: Build-Android
+    steps:
+      - name: Download android artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: android-apk
+          path: ./android/app/build/outputs/apk/release/app-release.apk
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.CI_CD_Token }}
+          publish_dir: ./build
+
+  
