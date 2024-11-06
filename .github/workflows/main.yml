@@ -130,10 +130,9 @@ jobs:
           github_token: ${{ secrets.CI_CD_Token }}
           publish_dir: ./build
 
-  Deploy-Andriod:
+  Deploy-Android:
     runs-on: macos-latest
-    name: Deploy-Andriod
-    needs: Build-Andriod
+    name: Deploy-Android
     steps:
       - name: Download android artifact
         uses: actions/download-artifact@v3
