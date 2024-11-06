@@ -133,6 +133,7 @@ jobs:
   Deploy-Android:
     runs-on: macos-latest
     name: Deploy-Android
+    needs: Build-Android
     steps:
       - name: Download android artifact
         uses: actions/download-artifact@v3
