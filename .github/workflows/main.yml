@@ -1,34 +1,146 @@
-name: Test and Build
+name: Test, Build and Deploy
 
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
-  test-and-build:
+
+  Setup:
     runs-on: macos-latest
-    name: Test and Build
+    name: Setup
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install Cocoapods
-        run: sudo gem install cocoapods
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '23'
+
+      - name: Cache Node Modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('./package-lock.json') }}
+          restore-keys: |
+              ${{ runner.os }}-node-modules-
 
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Pods 
-        working-directory: ./ios
-        run: pod install
 
-      - name: Run Tests
-        run: npm test
+    Test:
+        runs-on: macos-latest
+        needs: Setup
+        steps:
+          - name: Run Tests 
+            run: npm test
 
-      - name: Build iOS
-        run: npm run ios
-          
+
+    Build-iOS:
+      runs-on: macos-latest
+      name: Build-iOS
+      needs: Setup
+      steps:
+        - name: Install Cocoapods
+          run: sudo gem install cocoapods
+
+        - name: Restore Pods cache
+          uses: actions/cache@v3
+          with:
+            path: |
+              ios/Pods
+              ~/Library/Caches/CocoaPods
+              ~/.cocoapods
+            key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+            restore-keys: |
+              ${{ runner.os }}-pods-
+
+        - name: Install pod dependencies
+          run: |
+            cd ios
+            pod install
+            cd ..
+
+        - name: Build iOS
+          run: npm run ios
+
+        - name: Upload iOS IPA artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: ios-ipa
+            path: ./ios/build/Release-iphoneos/*.ipa
+
+
+    Build-Android:
+      runs-on: macos-latest
+      name: Build-Android
+      needs: Setup
+      steps:
+
+        - name: Set up JDK 17
+          uses: actions/setup-java@v3
+          with:
+            distribution: adopt
+            java-version: '17'
+            cache: gradle
+
+        - name: Cache Gradle Wrapper
+          uses: actions/cache@v2
+          with:
+            path: ~/.gradle/wrapper
+            key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}  
+
+        - name: Cache Gradle Dependencies
+          uses: actions/cache@v2
+          with:
+            path: ~/.gradle/caches
+            key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+            restore-keys: |
+              ${{ runner.os }}-gradle-caches-
+
+        - name: Build Android
+          run: npm run andriod
+
+        - name: Upload Android APK artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: android-apk
+            path: ./android/app/build/outputs/apk/release/app-release.apk
+
+    Deploy-iOS:
+       runs-on: macos-latest
+       name: Deploy-iOS
+       needs: Build-iOS
+       steps:
+         - name: Download iOS artifact
+           uses: actions/download-artifact@v3
+           with:
+            name: ios-ipa
+            path: ./ios/build/Release-iphoneos/*.ipa
+         - name: Deploy to GitHub Pages
+           uses: peaceiris/actions-gh-pages@v3
+           with:
+             github_token: ${{ secrets.CI_CD_Token }}
+             publish_dir: ./build
+
+    Deploy-Andriod:
+       runs-on: macos-latest
+       name: Deploy-Andriod
+       needs: Build-Andriod
+       steps:
+         - name: Download android artifact
+           uses: actions/download-artifact@v3
+           with:
+             name: android-apk
+             path: ./android/app/build/outputs/apk/release/app-release.apk
+         - name: Deploy to GitHub Pages
+           uses: peaceiris/actions-gh-pages@v3
+           with:
+             github_token: ${{ secrets.CI_CD_Token }}
+             publish_dir: ./build
