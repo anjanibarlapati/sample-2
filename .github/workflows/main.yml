@@ -15,7 +15,7 @@ jobs:
     name: Setup
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -23,12 +23,18 @@ jobs:
           node-version: '23'
 
       - name: Cache Node Modules
+        id: cache-npm
         uses: actions/cache@v3
         with:
           path: ./node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
               ${{ runner.os }}-node-modules-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
 
       - name: Install Dependencies
         run: npm install
@@ -38,19 +44,14 @@ jobs:
     runs-on: macos-latest
     needs: Setup
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Check Node Version
+        run: node --version
 
-      - name: Cache Node Modules
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-              ${{ runner.os }}-node-modules-
-      
-      - name: Install Dependencies
-        run: npm install
+      - name: Check NPM Version
+        run: npm --version
+
+      - name: List Installed Node Modules
+        run: ls -la ./node_modules
 
       - name: Run Tests 
         run: npm test
