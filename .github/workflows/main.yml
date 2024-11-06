@@ -231,7 +231,11 @@ jobs:
         run: npm test
 
       - name: Build iOS
-        run: npx react-native build-ios
+        # run: npx react-native build-ios
+        run: |
+          cd ios
+          xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -sdk iphoneos -configuration Release clean build
+
 
       - name: Upload iOS IPA artifact
         uses: actions/upload-artifact@v3
@@ -287,7 +291,10 @@ jobs:
         run: npm test
 
       - name: Build Android
-        run: npx react-native build-android
+        # run: npx react-native build-android
+        run: |
+          cd android
+          ./gradlew assembleRelease
 
       - name: Upload Android APK artifact
         uses: actions/upload-artifact@v3
@@ -298,7 +305,7 @@ jobs:
   Deploy-iOS:
     runs-on: macos-latest
     name: Deploy-iOS
-    needs: Build-iOS
+    needs: test-and-build-on-iOS
     steps:
       - name: Download iOS artifact
         uses: actions/download-artifact@v3
@@ -315,7 +322,7 @@ jobs:
   Deploy-Android:
     runs-on: macos-latest
     name: Deploy-Android
-    needs: Build-Android
+    needs: test-and-build-on-android
     steps:
       - name: Download android artifact
         uses: actions/download-artifact@v3
