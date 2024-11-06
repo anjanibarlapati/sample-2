@@ -186,7 +186,7 @@ on:
 jobs:
   test-and-build-on-iOS:
     runs-on: macos-latest
-    name: Test and Build
+    name: Test and Build on iOS
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -216,7 +216,7 @@ jobs:
 
   test-and-build-on-android:
     runs-on: macos-latest
-    name: Test and Build
+    name: Test and Build on android
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -239,4 +239,4 @@ jobs:
         run: npm test
 
       - name: Build Android
-        run: npx react-native run-andriod
+        run: npx react-native run-android
