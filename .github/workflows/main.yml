@@ -41,14 +41,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Print Current Working Directory
-        run: |
-          echo "Current working directory: $(pwd)"
-          ls -la
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-      - name: Print package.json Path (Test Job)
-        run: |
-          echo "Package.json path: $(pwd)/package.json"
+      - name: Cache Node Modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
 
       - name: Run Tests 
         run: npm test
@@ -59,6 +63,22 @@ jobs:
     name: Build-iOS
     needs: Setup
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Cache Node Modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
       - name: Install Cocoapods
         run: sudo gem install cocoapods
 
@@ -94,6 +114,21 @@ jobs:
     name: Build-Android
     needs: Setup
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Cache Node Modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-    
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
