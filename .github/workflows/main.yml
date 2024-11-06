@@ -10,9 +10,9 @@ on:
 
 jobs:
 
-  Setup:
+  Setup-and-test:
     runs-on: macos-latest
-    name: Setup
+    name: Setup-and-test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -33,35 +33,13 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-
-  Test:
-    runs-on: macos-latest
-    needs: Setup
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Cache Node Modules
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-
       - name: Run Tests 
         run: npm test
-
 
   Build-iOS:
     runs-on: macos-latest
     name: Build-iOS
-    needs: Setup
+    needs: Setup-and-test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -82,7 +60,7 @@ jobs:
       - name: Install Cocoapods
         run: sudo gem install cocoapods
 
-      - name: Restore Pods cache
+      - name: Cache pods
         uses: actions/cache@v3
         with:
           path: |
@@ -102,6 +80,9 @@ jobs:
       - name: Build iOS
         run: npm run ios
 
+      - name: List build directory contents
+        run: ls -R ./ios/build
+
       - name: Upload iOS IPA artifact
         uses: actions/upload-artifact@v3
         with:
@@ -112,7 +93,7 @@ jobs:
   Build-Android:
     runs-on: macos-latest
     name: Build-Android
-    needs: Setup
+    needs: Setup-and-test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
