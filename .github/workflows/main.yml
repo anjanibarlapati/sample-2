@@ -233,7 +233,7 @@ jobs:
       - name: Build iOS
         run: |
           cd ios
-          xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -sdk iphoneos -configuration Release clean build
+          xcodebuild -workspace PetBuddy.xcworkspace -scheme PetBuddy -sdk iphoneos -configuration Release clean build
 
 
       - name: Upload iOS IPA artifact
