@@ -39,9 +39,15 @@ jobs:
     needs: Setup
     steps:
 
+      - name: Print Current Working Directory
+        run: |
+          echo "Current working directory: $(pwd)"
+          ls -la
+
       - name: Print package.json Path (Test Job)
         run: |
-          echo "Node modules path in Test job: $(pwd)/package.json"
+          echo "Package.json path: $(pwd)/package.json"
+          
       - name: Run Tests 
         run: npm test
 
