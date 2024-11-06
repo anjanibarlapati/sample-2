@@ -230,7 +230,7 @@ jobs:
         run: npm test
 
       - name: Build iOS
-        run: npx react-native run-ios
+        run: npx react-native build-ios
 
 
   test-and-build-on-android:
@@ -280,4 +280,4 @@ jobs:
         run: npm test
 
       - name: Build Android
-        run: npx react-native run-android
+        run: npx react-native build-android
