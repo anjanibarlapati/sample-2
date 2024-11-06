@@ -38,18 +38,6 @@ jobs:
     runs-on: macos-latest
     needs: Setup
     steps:
-      - name: Check Node Version
-        run: node --version
-
-      - name: Check NPM Version
-        run: npm --version
-
-      - name: Print Node Modules Path (Test Job)
-        run: |
-          echo "Node modules path in Test job: $(pwd)/node_modules"
-
-      - name: List Installed Node Modules
-        run: ls -la ./node_modules
 
       - name: Run Tests 
         run: npm test
