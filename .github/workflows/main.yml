@@ -573,9 +573,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Check if index.ts exists
+      - name: Check if index.js exists
         run: |
-          if [ ! -f ./index.ts ]; then
+          if [ ! -f ./index.js ]; then
             echo "index.ts file does not exist. Please check your project structure."
             exit 1
           fi
